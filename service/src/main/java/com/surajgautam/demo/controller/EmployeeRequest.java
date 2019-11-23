@@ -1,4 +1,4 @@
-package com.surajgautam.demo.domain;
+package com.surajgautam.demo.controller;
 
 import lombok.Getter;
 

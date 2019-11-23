@@ -6,8 +6,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 
-import java.time.LocalDate;
-
 /**
  * Created by Suraj Gautam.
  */
@@ -22,8 +20,8 @@ public final class Employee {
     private String description;
     private String dateLastEdited;
 
-    public static Employee create(EmployeeRequest request){
-        return new Employee(null,request.getName(), request.getImage(), request.getDescription(), request.getDescription());
+    public static Employee create(String name, String image, String description, String dateLastEdited){
+        return new Employee(null,name, image, description, dateLastEdited);
     }
 
 }
