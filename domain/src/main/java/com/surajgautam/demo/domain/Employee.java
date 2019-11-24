@@ -12,7 +12,7 @@ import org.springframework.data.annotation.Id;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public final class Employee {
+public final class Employee implements Visitable<EmployeeVisitor> {
     @Id
     private String id;
     private String name;
@@ -20,8 +20,15 @@ public final class Employee {
     private String description;
     private String dateLastEdited;
 
-    public static Employee create(String name, String image, String description, String dateLastEdited){
-        return new Employee(null,name, image, description, dateLastEdited);
+    public static Employee create(EmployeeParameter params) {
+        return new Employee(null, params.getName(), params.getImage(), params.getDescription(), params.getDateLastEdited());
     }
 
+    @Override
+    public void accept(EmployeeVisitor visitor) {
+        visitor.setName(name);
+        visitor.setImage(image);
+        visitor.setDescription(description);
+        visitor.setDateLastEdited(dateLastEdited);
+    }
 }

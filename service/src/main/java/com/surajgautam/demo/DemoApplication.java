@@ -44,6 +44,5 @@ public class DemoApplication {
 		List<Employee> employees1 = Arrays.asList(employees);
 		System.out.println("Size is :::: " + employees1.size());
 		repository.saveAll(employees1);
-		repository.findAll();
 	}
 }
