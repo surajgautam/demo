@@ -3,6 +3,7 @@ package com.surajgautam.demo.repository;
 import com.surajgautam.demo.domain.Employee;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Created by Suraj Gautam.
@@ -15,4 +16,7 @@ public interface EmployeeRepository {
 
     List<Employee> findAll();
 
+    void delete(String id);
+
+    Optional<Employee> findById(String id);
 }

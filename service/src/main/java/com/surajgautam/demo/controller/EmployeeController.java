@@ -34,4 +34,24 @@ public class EmployeeController {
         return ResponseEntity.ok(response);
     }
 
+    @DeleteMapping(value = "/{id}")
+    public ResponseEntity<Void> deleteEmployee(@PathVariable(value = "id") String id) {
+        repository.delete(id);
+        return ResponseEntity.ok(null);
+    }
+
+    @PutMapping(value = "/{id}")
+    public ResponseEntity<Void> updateEmployee(@RequestBody EmployeeRequest request,
+                                               @PathVariable(value = "id") String id) {
+        Employee savedEmployee = repository.findById(id).orElseThrow(UnsupportedOperationException::new);
+        Employee updateableEmployee = Employee.create(request);
+        applyMergeUpdates(savedEmployee, updateableEmployee);
+        repository.save(savedEmployee);
+        return ResponseEntity.ok(null);
+    }
+
+    private void applyMergeUpdates(Employee savedEmployee, Employee updateableEmployee) {
+
+    }
+
 }
