@@ -9,5 +9,5 @@ public interface EmployeeVisitor extends Visitor {
     void setDescription(String description);
 
     void setDateLastEdited(String dateLastEdited);
-
+    
 }

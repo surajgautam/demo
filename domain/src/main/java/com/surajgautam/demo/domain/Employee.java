@@ -5,12 +5,15 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
+import org.springframework.util.Assert;
+
+import static org.springframework.util.Assert.notNull;
 
 /**
  * Created by Suraj Gautam.
  */
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public final class Employee implements Visitable<EmployeeVisitor> {
     @Id
@@ -21,8 +24,17 @@ public final class Employee implements Visitable<EmployeeVisitor> {
     private String dateLastEdited;
 
     public static Employee create(EmployeeParameter params) {
+        notNull(params.getName(), "name.cannot.be.null");
+        notNull(params.getImage(), "image.cannot.be.null");
+        notNull(params.getDescription(), "description.cannot.be.null");
+        notNull(params.getDateLastEdited(), "date.last.edited.cannot.be.null");
         return new Employee(null, params.getName(), params.getImage(), params.getDescription(), params.getDateLastEdited());
     }
+
+    public static Employee create(EmployeeFilter filter) {
+        return new Employee(null, filter.getName(), null, filter.getDescription(), null);
+    }
+
 
     @Override
     public void accept(EmployeeVisitor visitor) {
@@ -30,5 +42,12 @@ public final class Employee implements Visitable<EmployeeVisitor> {
         visitor.setImage(image);
         visitor.setDescription(description);
         visitor.setDateLastEdited(dateLastEdited);
+    }
+
+    public void update(Employee updateableEmployee) {
+        this.name = updateableEmployee.getName();
+        this.image = updateableEmployee.getImage();
+        this.dateLastEdited = updateableEmployee.getDateLastEdited();
+        this.description = updateableEmployee.getDescription();
     }
 }

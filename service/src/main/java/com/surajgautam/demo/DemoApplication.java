@@ -17,6 +17,8 @@ import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
 
+import static java.util.Arrays.asList;
+
 @SpringBootApplication
 @EnableMongoRepositories(considerNestedRepositories = true)
 @RequiredArgsConstructor
@@ -30,19 +32,18 @@ public class DemoApplication {
 
 	@Bean
 	CommandLineRunner commandLineRunner (MongoOperations mongoOperations){
-		//save
-		System.out.println("test");
-		loadToDatabase();
-		return (args)->{};
+		mongoOperations.dropCollection(Employee.class);
+		return (args)->{
+			System.out.println("test");
+			loadToDatabase();
+		};
 	};
 
 	@SneakyThrows
 	public void loadToDatabase(){
 		InputStream resourceAsStream = this.getClass().getClassLoader().getResourceAsStream("mock_data.json");
 		ObjectMapper objectMapper = new ObjectMapper();
-		Employee[] employees = objectMapper.readValue(resourceAsStream, Employee[].class);
-		List<Employee> employees1 = Arrays.asList(employees);
-		System.out.println("Size is :::: " + employees1.size());
-		repository.saveAll(employees1);
+		List<Employee> employees = asList(objectMapper.readValue(resourceAsStream, Employee[].class));
+		repository.saveAll(employees);
 	}
 }

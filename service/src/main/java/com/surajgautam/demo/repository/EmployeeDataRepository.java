@@ -2,11 +2,18 @@ package com.surajgautam.demo.repository;
 
 import com.surajgautam.demo.domain.Employee;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+
+import static org.springframework.data.domain.ExampleMatcher.StringMatcher.CONTAINING;
+import static org.springframework.data.domain.ExampleMatcher.StringMatcher.REGEX;
+import static org.springframework.data.domain.ExampleMatcher.matchingAny;
 
 /**
  * Created by Suraj Gautam.
@@ -28,8 +35,14 @@ public class EmployeeDataRepository implements EmployeeRepository {
     }
 
     @Override
-    public List<Employee> findAll() {
-        return repository.findAll();
+    public Page<Employee> findAll(Employee employee, Pageable pageable) {
+        Example<Employee> employeeExample = Example.of(employee, matchingAny().withStringMatcher(CONTAINING));
+        return repository.findAll(employeeExample, pageable);
+    }
+
+    @Override
+    public Page<Employee> findAll(Pageable pageable) {
+        return repository.findAll(pageable);
     }
 
     @Override

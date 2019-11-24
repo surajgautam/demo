@@ -2,12 +2,14 @@ package com.surajgautam.demo.controller;
 
 import com.surajgautam.demo.constants.ResourceConstants;
 import com.surajgautam.demo.domain.Employee;
+import com.surajgautam.demo.domain.EmployeeFilter;
 import com.surajgautam.demo.repository.EmployeeRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Required;
+import org.springframework.data.domain.*;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 /**
  * Created by Suraj Gautam.
@@ -20,8 +22,25 @@ public class EmployeeController {
     private final EmployeeRepository repository;
 
     @GetMapping
-    public List<Employee> getEmployees(EmployeeResponse employee) {
-        return repository.findAll();
+    public ResponseEntity<PageResource<Employee>> getEmployees(@PageableDefault Pageable pageable,
+                                                                EmployeeFilter filter) {
+        Page<Employee> page = null;
+        Employee employee = Employee.create(filter);
+        if(employee.getName()==null || employee.getDescription()==null){
+            page =   repository.findAll(pageable);
+        }else{
+            page = repository.findAll(employee, pageable);
+        }
+        return ResponseEntity.ok(toPageResource(page));
+
+    }
+
+    private PageResource<Employee> toPageResource(Page<Employee> page) {
+        PageResource<Employee> resource = new PageResource<>();
+        resource.setContent(page.getContent());
+        resource.setPageNumber(page.getPageable().getPageNumber());
+        resource.setTotalElements(page.getTotalElements());
+        return resource;
     }
 
     @PostMapping
@@ -45,13 +64,9 @@ public class EmployeeController {
                                                @PathVariable(value = "id") String id) {
         Employee savedEmployee = repository.findById(id).orElseThrow(UnsupportedOperationException::new);
         Employee updateableEmployee = Employee.create(request);
-        applyMergeUpdates(savedEmployee, updateableEmployee);
+        savedEmployee.update(updateableEmployee);
         repository.save(savedEmployee);
         return ResponseEntity.ok(null);
-    }
-
-    private void applyMergeUpdates(Employee savedEmployee, Employee updateableEmployee) {
-
     }
 
 }
