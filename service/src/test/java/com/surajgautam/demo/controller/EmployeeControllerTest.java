@@ -40,8 +40,8 @@ class EmployeeControllerTest {
         assertEquals(1, pageResource.getPageNumber());
         assertEquals(100, pageResource.getTotalElements());
 
-        List content = get(searchUrl, HttpStatus.OK.value(), PageResource.class).getContent();
-        content.forEach(o -> {
+        List response = get(searchUrl, HttpStatus.OK.value(), PageResource.class).getContent();
+        response.forEach(o -> {
             LinkedHashMap linkedHashMap = (LinkedHashMap) o;
             String name = (String) linkedHashMap.get("name");
             assertThat(name).contains("Operations");
