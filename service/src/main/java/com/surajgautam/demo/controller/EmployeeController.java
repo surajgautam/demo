@@ -24,7 +24,7 @@ public class EmployeeController {
     @GetMapping
     public ResponseEntity<PageResource<Employee>> getEmployees(@PageableDefault Pageable pageable,
                                                                 EmployeeFilter filter) {
-        Page<Employee> page = null;
+        Page<Employee> page;
         Employee employee = Employee.create(filter);
         if(employee.getName()==null || employee.getDescription()==null){
             page =   repository.findAll(pageable);

@@ -36,7 +36,7 @@ public class EmployeeDataRepository implements EmployeeRepository {
 
     @Override
     public Page<Employee> findAll(Employee employee, Pageable pageable) {
-        Example<Employee> employeeExample = Example.of(employee, matchingAny().withStringMatcher(CONTAINING));
+        Example<Employee> employeeExample = Example.of(employee, matchingAny().withIgnoreNullValues().withStringMatcher(CONTAINING));
         return repository.findAll(employeeExample, pageable);
     }
 

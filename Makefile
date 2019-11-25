@@ -1,7 +1,7 @@
 build:
 	mvn clean install -DskipTests
 
-up:
+infra:
 	docker-compose up
 
 test:

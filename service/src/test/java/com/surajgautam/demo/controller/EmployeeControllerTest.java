@@ -21,8 +21,22 @@ class EmployeeControllerTest {
 
     @Test
     void givenValidRequest_whenGet_ThenStatusOK() {
-        Employee[] employees = when().get("http://localhost:" + port + "/api/v1/employees")
+        PageResource resource = when().get("http://localhost:" + port + "/api/v1/employees")
                 .then().statusCode(HttpStatus.OK.value())
-                .and().extract().as(Employee[].class);
+                .and().extract().as(PageResource.class);
+
+        assertEquals(resource.getContent().size(), 10);
+        assertEquals(resource.getPageNumber(), 0);
+        assertEquals(resource.getTotalElements(), 100);
+
+        PageResource pageResource = when().get("http://localhost:" + port + "/api/v1/employees?page=1&size=20")
+                .then().statusCode(HttpStatus.OK.value())
+                .and().extract().as(PageResource.class);
+
+        assertEquals(20, pageResource.getContent().size());
+        assertEquals(1,pageResource.getPageNumber());
+        assertEquals(100,pageResource.getTotalElements());
+
+
     }
 }
