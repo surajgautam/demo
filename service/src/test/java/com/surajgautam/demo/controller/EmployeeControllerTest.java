@@ -1,6 +1,7 @@
 package com.surajgautam.demo.controller;
 
 import com.surajgautam.demo.domain.EmployeeParameter;
+import com.surajgautam.demo.exception.EmployeeNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
@@ -52,11 +53,18 @@ class EmployeeControllerTest {
     }
 
     @Test
+    void givenInvalidId_whenGet_ThenStatusNotFound() {
+        final String url = "http://localhost:"+port+BASE_URL+URL;
+        final String invalidId = "zxczxczxc";
+        EmployeeNotFoundException errorResponse = get(url+"/"+invalidId, HttpStatus.NOT_FOUND.value(), EmployeeNotFoundException.class);
+        assertEquals("Invalid id! Employee not found", errorResponse.getMessage());
+    }
+
+    @Test
     void givenValidRequest_whenCreate_ThenStatusCreated() {
         final String url = "http://localhost:" + port + BASE_URL + URL;
         final String searchUrl = "http://localhost:" + port + BASE_URL + URL + "?name=Suraj&description=Suraj image";
-
-        EmployeeParameter requestBody = createEmployeeRequest();
+        final EmployeeParameter requestBody = createEmployeeRequest();
 
         given()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -140,7 +148,9 @@ class EmployeeControllerTest {
     }
 
     private <T> T get(String url, int statusCode, Class<T> tClass) {
-        return given().get(url)
+        return given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .get(url)
                 .then().statusCode(statusCode)
                 .extract()
                 .as(tClass);

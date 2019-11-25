@@ -3,6 +3,7 @@ package com.surajgautam.demo.controller;
 import com.surajgautam.demo.constants.ResourceConstants;
 import com.surajgautam.demo.domain.Employee;
 import com.surajgautam.demo.domain.EmployeeFilter;
+import com.surajgautam.demo.exception.EmployeeNotFoundException;
 import com.surajgautam.demo.repository.EmployeeRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -11,6 +12,8 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.function.Supplier;
 
 /**
  * Created by Suraj Gautam.
@@ -31,7 +34,7 @@ public class EmployeeController {
 
     @GetMapping(value = ResourceConstants.EmployeeResource.PATH_VARIABLE_ID_URL)
     public ResponseEntity<EmployeeResponse> getEmployee(@PathVariable(value = "id") String id) {
-        Employee employee = repository.findById(id).orElseThrow(UnsupportedOperationException::new);
+        Employee employee = repository.findById(id).orElseThrow(resourceNotFound());
         EmployeeResponse employeeResponse = new EmployeeResponse();
         employee.accept(employeeResponse);
         return ResponseEntity.ok(employeeResponse);
@@ -62,11 +65,15 @@ public class EmployeeController {
     public ResponseEntity<Void> updateEmployee(@RequestBody EmployeeRequest request,
                                                @PathVariable(value = "id") String id) {
         //throw 404 instead
-        Employee savedEmployee = repository.findById(id).orElseThrow(UnsupportedOperationException::new);
+        Employee savedEmployee = repository.findById(id).orElseThrow(resourceNotFound());
         Employee updatableEmployee = Employee.create(request);
         savedEmployee.update(updatableEmployee);
         repository.save(savedEmployee);
         return ResponseEntity.ok(null);
+    }
+
+    private Supplier<EmployeeNotFoundException> resourceNotFound() {
+        return ()-> new EmployeeNotFoundException("Invalid id! Employee not found");
     }
 
 }
