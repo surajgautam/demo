@@ -1,14 +1,9 @@
 package com.surajgautam.demo.controller;
 
-import com.surajgautam.demo.domain.Employee;
 import com.surajgautam.demo.domain.EmployeeParameter;
-import lombok.RequiredArgsConstructor;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
@@ -17,10 +12,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 import static io.restassured.RestAssured.given;
-import static io.restassured.RestAssured.when;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Created by Suraj Gautam.
@@ -81,9 +74,67 @@ class EmployeeControllerTest {
         });
     }
 
+    @Test
+    void givenValidRequest_whenDelete_ThenStatusOk() {
+        final String url = "http://localhost:" + port + "/api/v1/employees";
+        PageResource resource = get(url, HttpStatus.OK.value(), PageResource.class);
 
-    private EmployeeParameter createEmployeeRequest() {
+        assertEquals(100, resource.getTotalElements());
+
+        String id = getId(resource);
+
+        given()
+                .delete(url + "/" + id)
+                .then()
+                .statusCode(HttpStatus.OK.value());
+
+        PageResource newResponse = get(url, HttpStatus.OK.value(), PageResource.class);
+        assertEquals(99, newResponse.getTotalElements());
+
+    }
+
+    @Test
+    void givenValidRequest_whenUpdate_ThenStatusOk() {
+        final String url = "http://localhost:" + port + "/api/v1/employees";
+
+        PageResource resource = get(url, HttpStatus.OK.value(), PageResource.class);
+        String id = getId(resource);
+
+        final String path = url + "/" + id;
+
+        EmployeeRequest payload = createEmployeeRequest();
+        EmployeeResponse employeeResponse = get(path, HttpStatus.OK.value(), EmployeeResponse.class);
+
+        assertNotNull(employeeResponse);
+        assertNotEquals(employeeResponse.getName(), payload.getName());
+        assertNotEquals(employeeResponse.getImage(), payload.getImage());
+        assertNotEquals(employeeResponse.getDescription(), payload.getDescription());
+        assertNotEquals(employeeResponse.getDateLastEdited(), payload.getDateLastEdited());
+
+        given().contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(payload)
+                .put(path)
+                .then()
+                .statusCode(HttpStatus.OK.value());
+
+        EmployeeResponse updatedResponse = get(path, HttpStatus.OK.value(), EmployeeResponse.class);
+
+        assertNotNull(employeeResponse);
+        assertEquals(payload.getName(), updatedResponse.getName());
+        assertEquals(payload.getImage(), updatedResponse.getImage());
+        assertEquals(payload.getDescription(), updatedResponse.getDescription());
+        assertEquals(payload.getDateLastEdited(), updatedResponse.getDateLastEdited());
+
+
+    }
+
+    private EmployeeRequest createEmployeeRequest() {
         return new EmployeeRequest("Suraj", "http://test.com", "Suraj image", LocalDate.now().toString());
+    }
+
+    private String getId(PageResource resource) {
+        LinkedHashMap linkedHashMap = (LinkedHashMap) resource.getContent().get(0);
+        return (String) linkedHashMap.get("id");
     }
 
     private <T> T get(String url, int statusCode, Class<T> tClass) {

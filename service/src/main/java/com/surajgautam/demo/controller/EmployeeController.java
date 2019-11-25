@@ -12,6 +12,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Optional;
+
 /**
  * Created by Suraj Gautam.
  */
@@ -42,6 +44,14 @@ public class EmployeeController {
     public ResponseEntity<Void> create(@RequestBody EmployeeRequest request) {
         repository.save(Employee.create(request));
         return new ResponseEntity<>(null, HttpStatus.CREATED);
+    }
+
+    @GetMapping(value = "/{id}")
+    public ResponseEntity<EmployeeResponse> getEmployee(@PathVariable(value = "id")String id){
+        Employee employee = repository.findById(id).orElseThrow(UnsupportedOperationException::new);
+        EmployeeResponse employeeResponse = new EmployeeResponse();
+        employee.accept(employeeResponse);
+        return ResponseEntity.ok(employeeResponse);
     }
 
     @DeleteMapping(value = "/{id}")
