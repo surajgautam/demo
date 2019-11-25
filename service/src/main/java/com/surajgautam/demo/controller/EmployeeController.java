@@ -27,8 +27,16 @@ public class EmployeeController {
                                                                EmployeeFilter filter) {
         Employee employee = Employee.create(filter);
         return ResponseEntity.ok(toPageResource(repository.findAll(employee, pageable)));
-
     }
+
+    @GetMapping(value = ResourceConstants.EmployeeResource.PATH_VARIABLE_ID_URL)
+    public ResponseEntity<EmployeeResponse> getEmployee(@PathVariable(value = "id") String id) {
+        Employee employee = repository.findById(id).orElseThrow(UnsupportedOperationException::new);
+        EmployeeResponse employeeResponse = new EmployeeResponse();
+        employee.accept(employeeResponse);
+        return ResponseEntity.ok(employeeResponse);
+    }
+
 
     private PageResource<Employee> toPageResource(Page<Employee> page) {
         PageResource<Employee> resource = new PageResource<>();
@@ -44,14 +52,6 @@ public class EmployeeController {
         return new ResponseEntity<>(null, HttpStatus.CREATED);
     }
 
-    @GetMapping(value = ResourceConstants.EmployeeResource.PATH_VARIABLE_ID_URL)
-    public ResponseEntity<EmployeeResponse> getEmployee(@PathVariable(value = "id") String id) {
-        Employee employee = repository.findById(id).orElseThrow(UnsupportedOperationException::new);
-        EmployeeResponse employeeResponse = new EmployeeResponse();
-        employee.accept(employeeResponse);
-        return ResponseEntity.ok(employeeResponse);
-    }
-
     @DeleteMapping(value = ResourceConstants.EmployeeResource.PATH_VARIABLE_ID_URL)
     public ResponseEntity<Void> deleteEmployee(@PathVariable(value = "id") String id) {
         repository.delete(id);
@@ -63,8 +63,8 @@ public class EmployeeController {
                                                @PathVariable(value = "id") String id) {
         //throw 404 instead
         Employee savedEmployee = repository.findById(id).orElseThrow(UnsupportedOperationException::new);
-        Employee updateableEmployee = Employee.create(request);
-        savedEmployee.update(updateableEmployee);
+        Employee updatableEmployee = Employee.create(request);
+        savedEmployee.update(updatableEmployee);
         repository.save(savedEmployee);
         return ResponseEntity.ok(null);
     }

@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 
+import java.util.Objects;
+
 import static org.springframework.util.Assert.notNull;
 
 /**
@@ -44,13 +46,13 @@ public final class Employee implements Visitable<EmployeeVisitor> {
     }
 
     public boolean isNameAndDescriptionNull() {
-        return this.name == null && this.description == null;
+        return Objects.isNull(this.name) && Objects.isNull(this.description);
     }
 
-    public void update(Employee updateableEmployee) {
-        this.name = updateableEmployee.getName();
-        this.image = updateableEmployee.getImage();
-        this.dateLastEdited = updateableEmployee.getDateLastEdited();
-        this.description = updateableEmployee.getDescription();
+    public void update(Employee updatableEmployee) {
+        this.name = updatableEmployee.getName();
+        this.image = updatableEmployee.getImage();
+        this.dateLastEdited = updatableEmployee.getDateLastEdited();
+        this.description = updatableEmployee.getDescription();
     }
 }

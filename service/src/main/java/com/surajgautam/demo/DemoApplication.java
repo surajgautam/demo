@@ -40,9 +40,9 @@ public class DemoApplication {
 
 	@SneakyThrows
 	public void loadToDatabase(){
-		InputStream resourceAsStream = this.getClass().getClassLoader().getResourceAsStream("mock_data.json");
+		InputStream resource = this.getClass().getClassLoader().getResourceAsStream("mock_data.json");
 		ObjectMapper objectMapper = new ObjectMapper();
-		List<Employee> employees = asList(objectMapper.readValue(resourceAsStream, Employee[].class));
+		List<Employee> employees = asList(objectMapper.readValue(resource, Employee[].class));
 		repository.saveAll(employees);
 	}
 }
