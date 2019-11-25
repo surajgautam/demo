@@ -6,9 +6,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 
-import static io.restassured.RestAssured.given;
+import java.util.LinkedHashMap;
+import java.util.List;
+
 import static io.restassured.RestAssured.when;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Created by Suraj Gautam.
@@ -21,22 +24,34 @@ class EmployeeControllerTest {
 
     @Test
     void givenValidRequest_whenGet_ThenStatusOK() {
-        PageResource resource = when().get("http://localhost:" + port + "/api/v1/employees")
-                .then().statusCode(HttpStatus.OK.value())
-                .and().extract().as(PageResource.class);
 
-        assertEquals(resource.getContent().size(), 10);
-        assertEquals(resource.getPageNumber(), 0);
-        assertEquals(resource.getTotalElements(), 100);
+        final String getURL = "http://localhost:" + port + "/api/v1/employees";
+        final String paginationUrl = "http://localhost:" + port + "/api/v1/employees?page=1&size=20";
+        final String searchUrl = "http://localhost:" + port + "/api/v1/employees?name=Operations";
 
-        PageResource pageResource = when().get("http://localhost:" + port + "/api/v1/employees?page=1&size=20")
-                .then().statusCode(HttpStatus.OK.value())
-                .and().extract().as(PageResource.class);
+        PageResource resource = get(getURL, HttpStatus.OK.value(), PageResource.class);
+        assertEquals(10, resource.getContent().size());
+        assertEquals(0, resource.getPageNumber());
+        assertEquals(100, resource.getTotalElements());
+
+        PageResource pageResource = get(paginationUrl, HttpStatus.OK.value(), PageResource.class);
 
         assertEquals(20, pageResource.getContent().size());
-        assertEquals(1,pageResource.getPageNumber());
-        assertEquals(100,pageResource.getTotalElements());
+        assertEquals(1, pageResource.getPageNumber());
+        assertEquals(100, pageResource.getTotalElements());
 
+        List content = get(searchUrl, HttpStatus.OK.value(), PageResource.class).getContent();
+        content.forEach(o -> {
+            LinkedHashMap linkedHashMap = (LinkedHashMap) o;
+            String name = (String) linkedHashMap.get("name");
+            assertThat(name).contains("Operations");
+        });
+    }
 
+    private <T> T get(String url, int statusCode, Class<T> tClass) {
+        return when().get(url)
+                .then().statusCode(statusCode)
+                .extract()
+                .as(tClass);
     }
 }

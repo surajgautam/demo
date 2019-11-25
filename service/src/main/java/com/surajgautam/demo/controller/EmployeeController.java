@@ -5,8 +5,8 @@ import com.surajgautam.demo.domain.Employee;
 import com.surajgautam.demo.domain.EmployeeFilter;
 import com.surajgautam.demo.repository.EmployeeRepository;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Required;
-import org.springframework.data.domain.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,15 +23,9 @@ public class EmployeeController {
 
     @GetMapping
     public ResponseEntity<PageResource<Employee>> getEmployees(@PageableDefault Pageable pageable,
-                                                                EmployeeFilter filter) {
-        Page<Employee> page;
+                                                               EmployeeFilter filter) {
         Employee employee = Employee.create(filter);
-        if(employee.getName()==null || employee.getDescription()==null){
-            page =   repository.findAll(pageable);
-        }else{
-            page = repository.findAll(employee, pageable);
-        }
-        return ResponseEntity.ok(toPageResource(page));
+        return ResponseEntity.ok(toPageResource(repository.findAll(employee, pageable)));
 
     }
 
@@ -46,7 +40,6 @@ public class EmployeeController {
     @PostMapping
     public ResponseEntity<EmployeeResponse> create(@RequestBody EmployeeRequest request) {
         Employee employee = repository.save(Employee.create(request));
-
         EmployeeResponse response = new EmployeeResponse();
         employee.accept(response);
 

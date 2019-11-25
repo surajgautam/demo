@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.springframework.data.domain.ExampleMatcher.StringMatcher.CONTAINING;
-import static org.springframework.data.domain.ExampleMatcher.StringMatcher.REGEX;
 import static org.springframework.data.domain.ExampleMatcher.matchingAny;
 
 /**
@@ -36,6 +35,9 @@ public class EmployeeDataRepository implements EmployeeRepository {
 
     @Override
     public Page<Employee> findAll(Employee employee, Pageable pageable) {
+        if (employee.isNameAndDescriptionNull()) {
+            return repository.findAll(pageable);
+        }
         Example<Employee> employeeExample = Example.of(employee, matchingAny().withIgnoreNullValues().withStringMatcher(CONTAINING));
         return repository.findAll(employeeExample, pageable);
     }

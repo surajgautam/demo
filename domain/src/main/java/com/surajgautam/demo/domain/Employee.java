@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
-import org.springframework.util.Assert;
 
 import static org.springframework.util.Assert.notNull;
 
@@ -42,6 +41,10 @@ public final class Employee implements Visitable<EmployeeVisitor> {
         visitor.setImage(image);
         visitor.setDescription(description);
         visitor.setDateLastEdited(dateLastEdited);
+    }
+
+    public boolean isNameAndDescriptionNull() {
+        return this.name == null && this.description == null;
     }
 
     public void update(Employee updateableEmployee) {
