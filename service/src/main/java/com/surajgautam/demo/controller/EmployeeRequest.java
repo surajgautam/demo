@@ -2,10 +2,12 @@ package com.surajgautam.demo.controller;
 
 import com.surajgautam.demo.domain.EmployeeParameter;
 
+import java.io.Serializable;
+
 /**
  * Created by Suraj Gautam.
  */
-public class EmployeeRequest implements EmployeeParameter {
+public class EmployeeRequest implements EmployeeParameter, Serializable {
     private String name;
     private String image;
     private String description;

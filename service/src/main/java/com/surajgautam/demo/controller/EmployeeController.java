@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -38,12 +39,9 @@ public class EmployeeController {
     }
 
     @PostMapping
-    public ResponseEntity<EmployeeResponse> create(@RequestBody EmployeeRequest request) {
-        Employee employee = repository.save(Employee.create(request));
-        EmployeeResponse response = new EmployeeResponse();
-        employee.accept(response);
-
-        return ResponseEntity.ok(response);
+    public ResponseEntity<Void> create(@RequestBody EmployeeRequest request) {
+        repository.save(Employee.create(request));
+        return new ResponseEntity<>(null, HttpStatus.CREATED);
     }
 
     @DeleteMapping(value = "/{id}")
@@ -55,6 +53,7 @@ public class EmployeeController {
     @PutMapping(value = "/{id}")
     public ResponseEntity<Void> updateEmployee(@RequestBody EmployeeRequest request,
                                                @PathVariable(value = "id") String id) {
+        //throw 404 instead
         Employee savedEmployee = repository.findById(id).orElseThrow(UnsupportedOperationException::new);
         Employee updateableEmployee = Employee.create(request);
         savedEmployee.update(updateableEmployee);

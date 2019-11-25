@@ -34,7 +34,6 @@ public class DemoApplication {
 	CommandLineRunner commandLineRunner (MongoOperations mongoOperations){
 		mongoOperations.dropCollection(Employee.class);
 		return (args)->{
-			System.out.println("test");
 			loadToDatabase();
 		};
 	};
