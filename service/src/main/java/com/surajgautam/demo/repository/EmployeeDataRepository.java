@@ -43,11 +43,6 @@ public class EmployeeDataRepository implements EmployeeRepository {
     }
 
     @Override
-    public Page<Employee> findAll(Pageable pageable) {
-        return repository.findAll(pageable);
-    }
-
-    @Override
     public void delete(String id) {
         repository.deleteById(id);
     }

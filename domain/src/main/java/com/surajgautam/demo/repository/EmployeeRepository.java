@@ -19,8 +19,6 @@ public interface EmployeeRepository {
 
     Page<Employee> findAll(Employee employee, Pageable pageable);
 
-    Page<Employee> findAll(Pageable pageable);
-
     void delete(String id);
 
     Optional<Employee> findById(String id);
