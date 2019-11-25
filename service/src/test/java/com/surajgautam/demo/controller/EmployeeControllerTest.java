@@ -11,6 +11,8 @@ import java.time.LocalDate;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import static com.surajgautam.demo.constants.ResourceConstants.BASE_URL;
+import static com.surajgautam.demo.constants.ResourceConstants.EmployeeResource.URL;
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -26,9 +28,9 @@ class EmployeeControllerTest {
 
     @Test
     void givenValidRequest_whenGet_ThenStatusOK() {
-        final String url = "http://localhost:" + port + "/api/v1/employees";
-        final String paginationUrl = "http://localhost:" + port + "/api/v1/employees?page=1&size=20";
-        final String searchUrl = "http://localhost:" + port + "/api/v1/employees?name=Operations";
+        final String url = "http://localhost:" + port + BASE_URL + URL;
+        final String paginationUrl = "http://localhost:" + port + BASE_URL + URL + "?page=1&size=20";
+        final String searchUrl = "http://localhost:" + port + BASE_URL + URL + "?name=Operations";
 
         PageResource resource = get(url, HttpStatus.OK.value(), PageResource.class);
         assertEquals(10, resource.getContent().size());
@@ -51,8 +53,8 @@ class EmployeeControllerTest {
 
     @Test
     void givenValidRequest_whenCreate_ThenStatusCreated() {
-        final String url = "http://localhost:" + port + "/api/v1/employees";
-        final String searchUrl = "http://localhost:" + port + "/api/v1/employees?name=Suraj&description=Suraj image";
+        final String url = "http://localhost:" + port + BASE_URL + URL;
+        final String searchUrl = "http://localhost:" + port + BASE_URL + URL + "?name=Suraj&description=Suraj image";
 
         EmployeeParameter requestBody = createEmployeeRequest();
 
@@ -76,7 +78,7 @@ class EmployeeControllerTest {
 
     @Test
     void givenValidRequest_whenDelete_ThenStatusOk() {
-        final String url = "http://localhost:" + port + "/api/v1/employees";
+        final String url = "http://localhost:" + port + BASE_URL + URL;
         PageResource resource = get(url, HttpStatus.OK.value(), PageResource.class);
 
         assertEquals(100, resource.getTotalElements());
@@ -95,7 +97,7 @@ class EmployeeControllerTest {
 
     @Test
     void givenValidRequest_whenUpdate_ThenStatusOk() {
-        final String url = "http://localhost:" + port + "/api/v1/employees";
+        final String url = "http://localhost:" + port + BASE_URL + URL;
 
         PageResource resource = get(url, HttpStatus.OK.value(), PageResource.class);
         String id = getId(resource);

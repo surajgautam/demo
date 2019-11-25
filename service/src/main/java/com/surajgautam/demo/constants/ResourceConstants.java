@@ -13,6 +13,7 @@ public final class ResourceConstants {
 
     public interface EmployeeResource{
         String URL = "/employees";
+        String PATH_VARIABLE_ID_URL = "/{id}";
     }
 
 }
