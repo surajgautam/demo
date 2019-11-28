@@ -6,3 +6,6 @@ infra:
 
 test:
 	mvn clean install
+
+run:
+	cd service/  && mvn spring-boot:run
