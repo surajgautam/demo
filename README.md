@@ -16,7 +16,7 @@
 
     `make run` 
     
-###Run the application  :
+### Run the application  :
 
 Open the terminal and go to the root of the project and enter the following command in terminal.
 * `make build && make infra`
